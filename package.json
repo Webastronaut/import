@@ -1,0 +1,12 @@
+{
+  "name": "import",
+  "description": "Lazy module loader",
+  "version": "2.0.0",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-browser-sync": "~2.1.1",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-minified": "~0.0.6"
+  }
+}

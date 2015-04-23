@@ -1,0 +1,205 @@
+<!doctype html>
+<!--[if lte IE 8]> <html class="no-js lt-ie9" lang="de"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="de"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>loadmodule</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="cleartype" content="on">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		p {
+			width: 50%;
+			height: 30px;
+			border: solid 1px #000;
+			margin: 0 auto;
+			position:relative;
+			opacity: 1;
+			transition: opacity .2s;
+		}
+
+		span {
+			display:block;
+			width: 0;
+			height:30px;
+			background: cadetblue;
+			position: absolute;
+			top: 0;
+			left: 0;
+			/*transition: width .2s;*/
+		}
+
+		.on-loading-10 span {
+			width: 10%;
+		}
+
+		.on-loading-20 span {
+			width: 20%;
+		}
+
+		.on-loading-30 span {
+			width: 30%;
+		}
+
+		.on-loading-40 span {
+			width: 40%;
+		}
+
+		.on-loading-50 span {
+			width: 50%;
+		}
+
+		.on-loading-60 span {
+			width: 60%;
+		}
+
+		.on-loading-70 span {
+			width: 70%;
+		}
+
+		.on-loading-80 span {
+			width: 80%;
+		}
+
+		.on-loading-90 span {
+			width: 90%;
+		}
+
+		.on-loading-100 span,
+		.on-loading-done span {
+			width: 100%;
+		}
+
+		.on-loading-done p {
+			opacity:0;
+		}
+	</style>
+</head>
+<body>
+<!-- JS -->
+<div class="mod-content mod-content-centered">
+	<h1>Lazy module loading</h1>
+	<h2></h2>
+	<p><span></span></p>
+
+	<div id="foo" style="margin-top: 1000px">foo</div>
+</div>
+		<script src="../dist/basket.full.custom.min.js"></script>
+		<script>
+			basket.require(
+					{
+						url: 'jquery-2.1.3.min.js',
+						unique: 0
+					},
+					{
+						url: '../dist/jquery.import.min.js',
+						unique: new Date().getTime()
+					}
+			).then(function () {
+				var funcFoo = function (foo) {
+					console.log('');
+					console.log('called funcFoo:', foo, this);
+					console.log('');
+				};
+
+				var funcBar = function (bar) {
+					console.log('');
+					console.log('called funcBar:', bar, this);
+					console.log('');
+				};
+
+				var funcBaz = function (baz) {
+					console.log('');
+					console.log('called funcBaz:', baz, this);
+					console.log('');
+				};
+
+				var funcToll = function (toll) {
+					console.log('');
+					console.log('called funcToll:', toll, this);
+					console.log('');
+				};
+
+				var loading = $.import([
+					{
+						condition: $('body'),
+						fetch: [
+							'https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.11.2/URI.min.js',
+							'https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.2.1/jasmine.min.js'
+						],
+						callback: [
+							{ method: funcFoo, param: 'foo' },
+							{ method: funcBar, param: { text: 'bar' } },
+							{ method: funcBaz }
+						],
+						unique: new Date().getTime()
+					},
+					{
+						condition: $('#foo'),
+						fetch: [
+							'https://www.high5.com/typo3conf/ext/bra_projectfiles/Resources/Public/js/libs/vendor/slick/slick.min.js'
+						],
+						callback: [
+							{ method: funcToll, param: 'toll' }
+						],
+						unique: new Date().getTime()
+					},
+					{
+						condition: $('p'),
+						fetch: [
+							'http://yandex.st/highlightjs/7.3/styles/googlecode.min.css',
+							'http://yandex.st/highlightjs/7.3/highlight.min.js'
+						],
+						callback: [],
+						unique: new Date().getTime() //new Date().getTime()
+					},
+					{
+						condition: true,
+						event: [
+							{ name: 'angular-loaded', data: ['classname'] },
+							{ name: 'angular-loaded-too', data: [['holy', 's***']] }
+						],
+						fetch: [
+							'http://yandex.st/highlightjs/7.3/styles/googlecode.min.css'
+						],
+						callback: [],
+						unique: new Date().getTime()
+					}
+				], true);
+
+				loading.then(function() {
+					console.log('promises are so great');
+				});
+
+				$(document).on('angular-loaded', function (e, className) {
+					console.log(className);
+				});
+
+				$(document).on('angular-loaded-too', function (e, param) {
+					console.log(param.join(' '));
+				});
+
+				$(document).on('import-foo-bar-loaded', function () {
+					console.log('event: foobar has been loaded');
+				});
+
+				var statusText = function () {
+					$('h2').text($('body').attr('data-loaded') + ' of ' + $('body').attr('data-loading') + ' modules loaded');
+				};
+
+				statusText();
+
+				$(document).on('import-module-loaded import-loading-done', statusText);
+			});
+		</script>
+</body>
+</html>
