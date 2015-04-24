@@ -11,6 +11,12 @@ Most of the frontend modules I develop consist of styles, javascript plugins and
 
 Think of it as the spine of your web application. Please read on to get an idea what import.js is capable of and what you can achieve with it.
 
+## TBD
+
+- code review
+- tests
+- performance optimizations
+
 ## Get started
 
 First include a version of jQuery (>= 1.10.x, or you load jQuery via basket), ```basket.full.custom.min.js``` and ```jquery.import.min.js``` to your template.
