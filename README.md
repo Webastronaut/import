@@ -95,7 +95,7 @@ The main part of the whole thing is the sorting of the modules.
 | fetch     | {Array}         | An array of file references to be loaded. Allowed are CSS and JS files.                                   |
 | event     | {Array}         | A list of custom events and related parameters to be fired, when the module dependencies have been loaded |
 | callback  | {Array}         | A list of callbacks to be called, when the module has been loaded                                         |
-| unique    | {Number/String} |                                                                                                           |
+| unique    | {Number/String} | If this value changes the modules' dependecies will be refetched from the server                                                                                               |
 
 ### Thrown events
 
