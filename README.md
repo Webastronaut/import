@@ -7,8 +7,6 @@ Support: IE9+
 
 ## Why another dependency loader?
 
-That's a good question. Although there are already many dependency loaders like require, bag, browserify and so I missed a couple of things while using them.
-
 Most of the frontend modules I develop consist of styles, javascript plugins and or custom scripts and related DOM elements. What I needed was a dependency loader checking the existence of a module in the DOM or if a given condition like touch events is true or not and loading the dependecies when and only when the given condition is true. That's pretty much it.
 
 Think of it as the spine of your web application. Please read on to get an idea what import.js is capable of and what you can achieve with it.
