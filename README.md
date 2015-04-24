@@ -1,7 +1,7 @@
 import.js
 =========
 
-Dependency loader plugin (only 3KB). Loads plugin dependencies (JS/CSS), stores them into the local storage and a lot more. A refactored and extended version of [loadmodule.js](https://github.com/Webastronaut/loadmodule)
+Dependency loader plugin (only 3KB). Loads plugin dependencies (JS/CSS), stores them into the local storage and a lot more. A refactored and extended version of [loadmodule.js](https://github.com/Webastronaut/loadmodule). This plugin uses a customized version of the awesome [basket.js](https://github.com/addyosmani/basket.js) from Addy Osmani.
 
 Support: IE9+
 
