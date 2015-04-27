@@ -1,17 +1,21 @@
 import.js
 =========
 
-Dependency loader plugin (only 3KB). Loads plugin dependencies (JS/CSS), stores them into the local storage and a lot more.
+Dependency loader plugin (only 3KB). Loads plugin dependencies (JS/CSS), stores them into the local storage and a lot more. A refactored and extended version of [loadmodule.js](https://github.com/Webastronaut/loadmodule). This plugin uses a customized version of the awesome [basket.js](https://github.com/addyosmani/basket.js) from Addy Osmani.
 
 Support: IE9+
 
 ## Why another dependency loader?
 
-That's a good question. Although there are already many dependency loaders like require, bag, browserify and so I missed a couple of things while using them.
-
 Most of the frontend modules I develop consist of styles, javascript plugins and or custom scripts and related DOM elements. What I needed was a dependency loader checking the existence of a module in the DOM or if a given condition like touch events is true or not and loading the dependecies when and only when the given condition is true. That's pretty much it.
 
 Think of it as the spine of your web application. Please read on to get an idea what import.js is capable of and what you can achieve with it.
+
+## TBD
+
+- code review
+- tests
+- performance optimizations
 
 ## Get started
 
@@ -91,7 +95,7 @@ The main part of the whole thing is the sorting of the modules.
 | fetch     | {Array}         | An array of file references to be loaded. Allowed are CSS and JS files.                                   |
 | event     | {Array}         | A list of custom events and related parameters to be fired, when the module dependencies have been loaded |
 | callback  | {Array}         | A list of callbacks to be called, when the module has been loaded                                         |
-| unique    | {Number|String} |                                                                                                           |
+| unique    | {Number/String} | If this value changes the modules' dependecies will be refetched from the server                                                                                               |
 
 ### Thrown events
 
