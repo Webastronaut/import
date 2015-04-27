@@ -112,7 +112,15 @@
 		 * @returns {Boolean}
 		 */
 		_.checkExistence = function (module) {
-			return (module.condition.jquery && module.condition.length !== 0) || module.condition;
+			var moduleExists = false;
+
+			if(module.condition.jquery) {
+				moduleExists = module.condition.length !== 0;
+			} else {
+				moduleExists = module.condition;
+			}
+
+			return moduleExists;
 		};
 
 		/** Sets the loading order of the module based on its offset from the top
@@ -145,6 +153,7 @@
 				newModules = [];
 
 			for(var i = 0, len = modules.length; i < len; i += 1) {
+				console.log('module exists', _.checkExistence(modules[i]));
 				if(_.checkExistence(modules[i])) {
 					_.setOrder(modules[i]).then(function (module) {
 						newModules.push( module );

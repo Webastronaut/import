@@ -97,7 +97,7 @@
 		<script>
 			basket.require(
 					{
-						url: 'jquery-2.1.3.min.js',
+						url: '../example/jquery-2.1.3.min.js',
 						unique: 0
 					},
 					{
@@ -198,7 +198,7 @@
 
 				statusText();
 
-				$(document).on('import-module-loaded import-loading-done', statusText);
+				$(document).on('on-module-loaded on-loading-done', statusText);
 			});
 		</script>
 </body>
