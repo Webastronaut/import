@@ -114,6 +114,10 @@
 		_.checkExistence = function (module) {
 			var moduleExists = false;
 
+			if(module.condition === undefined) {
+				return false;
+			}
+
 			if(module.condition.jquery) {
 				moduleExists = module.condition.length !== 0;
 			} else {
