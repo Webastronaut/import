@@ -198,10 +198,11 @@
 		/** Sets the loading status by adding classes and attributes to the body element
 		 *
 		 */
-		_.setStatus = function () {
-			var temp,
+		_.setStatus = function (status) {
+			var temp;
+
 			// get loading status
-				status = Math.floor(_.loaded * 100 / _.lengthLoading);
+			status = status ? status : Math.floor(_.loaded * 100 / _.lengthLoading);
 
 			// we only want percent in tens steps
 			if (status > 10 && status < 100) {
@@ -245,9 +246,9 @@
 						_.$body
 							.removeClass('on-loading-done')
 							.addClass('on-loading-complete');
-					}, 600);
+					}, 100);
 				}
-			}, 500);
+			}, 50);
 		};
 
 		/** Self explanatory
@@ -268,11 +269,16 @@
 		 *
 		 */
 		_.load = function () {
+			var nothingToLoad = !modules.length;
+
 			if (setStatus) {
 				_.setLoadingValues();
-				_.setStatus();
+				_.setStatus(nothingToLoad ? 100 : false);
 			}
-			_.getDependencies(modules[0]);
+
+			if(!nothingToLoad) {
+				_.getDependencies(modules[0]);
+			}
 		};
 
 		/** Constructor

@@ -131,7 +131,7 @@
 
 				var loading = $.import([
 					{
-						condition: $('body'),
+						condition: $('bodys'),
 						fetch: [
 							'https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.11.2/URI.min.js',
 							'https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.2.1/jasmine.min.js'
@@ -144,7 +144,7 @@
 						unique: new Date().getTime()
 					},
 					{
-						condition: $('#foo'),
+						condition: $('#foos'),
 						fetch: [
 							'https://www.high5.com/typo3conf/ext/bra_projectfiles/Resources/Public/js/libs/vendor/slick/slick.min.js'
 						],
@@ -154,7 +154,7 @@
 						unique: new Date().getTime()
 					},
 					{
-						condition: $('p'),
+						condition: $('ps'),
 						fetch: [
 							'http://yandex.st/highlightjs/7.3/styles/googlecode.min.css',
 							'http://yandex.st/highlightjs/7.3/highlight.min.js'
@@ -163,7 +163,7 @@
 						unique: new Date().getTime() //new Date().getTime()
 					},
 					{
-						condition: true,
+						condition: false,
 						event: [
 							{ name: 'angular-loaded', data: ['classname'] },
 							{ name: 'angular-loaded-too', data: [['holy', 's***']] }
