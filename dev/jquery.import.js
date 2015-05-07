@@ -27,38 +27,39 @@
 		 */
 		_.getDependencies = function (module) {
 			var $that = $(),
+				mod = module,
 				basketOptions = {},
 				promise,
 				eventData;
 
 			// all modules loaded?
-			if (module.fetch.length === 0) {
+			if (mod.fetch.length === 0) {
 				// do we have a jquery object?
-				if (module.condition.jquery) {
-					$that = module.condition;
+				if (mod.condition.jquery) {
+					$that = mod.condition;
 				}
 
 				// fire the callback(s) and assign this to it
-				if (module.callback) {
-					for (var i = 0, len = module.callback.length; i < len; i += 1) {
-						if (module.callback[i].method) {
+				if (mod.callback) {
+					for (var i = 0, len = mod.callback.length; i < len; i += 1) {
+						if (mod.callback[i].method) {
 							// do we have params for the method call?
-							if (module.callback[i].param) {
-								module.callback[i].method.call($that, module.callback[i].param);
+							if (mod.callback[i].param) {
+								mod.callback[i].method.call($that, mod.callback[i].param);
 							} else {
-								module.callback[i].method.call($that);
+								mod.callback[i].method.call($that);
 							}
 						}
 					}
 				}
 
 				// fire custom event(s) when module is available
-				if (module.event && module.event.length) {
-					for (var j = 0, lenEvt = module.event.length; j < lenEvt; j += 1) {
+				if (mod.event && mod.event.length) {
+					for (var j = 0, lenEvt = mod.event.length; j < lenEvt; j += 1) {
 						// get data for event handler if data assigned
-						eventData = module.event[j].data.slice() || [];
+						eventData = mod.event[j].data.slice() || [];
 
-						_.$doc.trigger(module.event[j].name, eventData);
+						_.$doc.trigger(mod.event[j].name, eventData);
 					}
 				}
 
@@ -72,40 +73,40 @@
 					_.setStatus();
 				}
 				// remove loaded module from modules list
-				modules.shift();
+				//modules.shift();
 				_.loading -= 1;
 
-				if (modules[0]) {
-					_.getDependencies(modules[0]);
-				}
+				/*if (mod[0]) {
+					_.getDependencies(mod[0]);
+				}*/
 
 				return;
 			} else {
 				// for the party people load it from the localstorage
-				basketOptions.url = module.fetch[0];
+				basketOptions.url = mod.fetch[0];
 
-				if (module.unique) {
-					basketOptions.unique = module.unique;
+				if (mod.unique) {
+					basketOptions.unique = mod.unique;
 				}
 
 				promise = basket.require(basketOptions);
 
 				// store the loaded dependency reference for possible lookups
-				if ($.inArray(module.fetch[0], window.loadedDependencies) < 0) {
-					window.loadedDependencies.push(module.fetch[0]);
+				if ($.inArray(mod.fetch[0], window.loadedDependencies) < 0) {
+					window.loadedDependencies.push(mod.fetch[0]);
 				}
 			}
 
 			// Load the next dependency
 			promise.then(function () {
-				module.fetch.shift();
+				mod.fetch.shift();
 
-				_.getDependencies(module);
+				_.getDependencies(mod);
 			}, function () {
 				// uh oh, an error occured while loading (silence is golden)
 				_.$doc.trigger('on-loading-error', [
 					{
-						module: module,
+						module: mod,
 						status: 'Failed to load module'
 					}
 				]);
@@ -245,9 +246,12 @@
 						_.$body
 							.removeClass('on-loading-done')
 							.addClass('on-loading-complete');
-					}, 600);
+
+						_.loadEnd = new Date().getTime();
+						console.log((_.loadEnd - _.loadStart) + 'ms');
+					}, 100);
 				}
-			}, 500);
+			}, 50);
 		};
 
 		/** Self explanatory
@@ -272,7 +276,10 @@
 				_.setLoadingValues();
 				_.setStatus();
 			}
-			_.getDependencies(modules[0]);
+
+			for (var i = 0, len = modules.length; i < len; i += 1) {
+				_.getDependencies(modules[i]);
+			}
 		};
 
 		/** Constructor
@@ -280,6 +287,8 @@
 		 */
 		_.init = function () {
 			var sortingDone;
+
+			_.loadStart = new Date().getTime();
 
 			if (!window.loadedDependencies) {
 				// storage for loaded dependencies
