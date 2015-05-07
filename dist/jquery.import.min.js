@@ -16,7 +16,7 @@
 			loaded: 0,
 			$body: $('body'),
 			$doc: $(document),
-			promise: $.Deferred(),
+			defer: RSVP.defer(),
 			viewport: window.innerHeight
 		};
 
@@ -142,16 +142,18 @@
 		 * @returns {Object} - Promise
 		 */
 		_.setOrder = function (module) {
-			var promise = $.Deferred();
+			var promise = new RSVP.Promise(function (resolve) {
 
-			if (module.condition.jquery) {
-				module.order = Math.floor(module.condition.offset().top);
-			} else {
-				module.order = _.viewport;
-			}
-			promise.resolve(module);
+				if (module.condition.jquery) {
+					module.order = Math.floor(module.condition.offset().top);
+				} else {
+					module.order = _.viewport;
+				}
 
-			return promise.promise();
+				resolve(module);
+			});
+
+			return promise;
 		};
 
 		/** Checks the condition of all modules
@@ -160,24 +162,23 @@
 		 * @returns {Object} - Promise
 		 */
 		_.rejectMissingModules = function () {
-			var promise = $.Deferred(),
-				newModules = [];
+			var promise = new RSVP.Promise(function (resolve) {
+				var newModules = [];
 
-			for (var i = 0, len = modules.length; i < len; i += 1) {
-				if (_.checkExistence(modules[i])) {
-					_.setOrder(modules[i]).then(function (module) {
-						newModules.push(module);
-					});
+				for (var i = 0, len = modules.length; i < len; i += 1) {
+					if (_.checkExistence(modules[i])) {
+						_.setOrder(modules[i]).then(function (module) {
+							newModules.push(module);
+						});
+					}
+
+					if (i === len - 1) {
+						resolve();
+					}
 				}
+			});
 
-				if (i === len - 1) {
-					promise.resolve();
-				}
-			}
-
-			modules = newModules;
-
-			return promise.promise();
+			return promise;
 		};
 
 		/** Sorts all modules by order property
@@ -185,15 +186,15 @@
 		 * @returns {Object} - Promise
 		 */
 		_.sortModules = function () {
-			var promise = $.Deferred();
+			var promise = new RSVP.Promise(function(resolve) {
+				modules.sort(function (a, b) {
+					return a.order - b.order;
+				});
 
-			modules.sort(function (a, b) {
-				return a.order - b.order;
+				resolve();
 			});
 
-			promise.resolve();
-
-			return promise.promise();
+			return promise;
 		};
 
 		/** Sets the loading status by adding classes and attributes to the body element
@@ -241,7 +242,7 @@
 						.replace('on-loading-100', 'on-loading-done');
 
 					_.$doc.trigger('on-loading-done');
-					_.promise.resolve();
+					_.defer.resolve();
 
 					setTimeout(function () {
 						_.$body
@@ -307,6 +308,6 @@
 
 		_.init();
 
-		return _.promise.promise();
+		return _.defer.promise;
 	};
 })(jQuery);
