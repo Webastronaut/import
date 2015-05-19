@@ -13,7 +13,9 @@ Think of it as the spine of your web application. Please read on to get an idea 
 
 ## TBD
 
-- code review
+- remove jqQery dependency -> DONE
+- add facade to add event listeners after each module has been loaded
+- code review -> DONE
 - tests
 - performance optimizations
 
