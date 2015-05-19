@@ -19,21 +19,22 @@ Think of it as the spine of your web application. Please read on to get an idea 
 
 ## Get started
 
-First include a version of jQuery (>= 1.10.x, or you load jQuery via basket), ```basket.full.custom.min.js``` and ```jquery.import.min.js``` to your template.
+First include ```basket.full.custom.min.js``` and ``import.min.js``` to your template.
 
 ```HTML
 <script src="dist/basket.full.custom.min.js"></script>
-<script src="dist/jquery.import.min.js"></script>
+<script src="dist/import.min.js"></script>
 ```
 
-Asserting jQuery has been loaded in some kind of way, you can then proceed to use import.js for lazy module loading.
+Then proceed to use import.js to lazily load the needed modules dependencies.
 
 ```JavaScript
+// ATTENTION: jQuery is not required!
 $(function() {
 
-	var loading = $.import([
+	var loading = window.import([
 		{
-			condition: $('body'),
+			condition: 'body',
 			fetch: [
 				'some/dep/path/styles.css',
 				'some/dep/path/script.js'
