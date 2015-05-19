@@ -91,115 +91,94 @@
 	<h2></h2>
 	<p><span></span></p>
 
+	<p><span></span></p>
+
 	<div id="foo" style="margin-top: 1000px">foo</div>
 </div>
-		<script src="../dist/basket.full.custom.min.js"></script>
-		<script>
-			basket.require(
-					{
-						url: '../example/jquery-2.1.3.min.js',
-						unique: 0
-					},
-					{
-						url: '../dist/jquery.import.min.js',
-						unique: new Date().getTime()
-					}
-			).then(function () {
-				var funcFoo = function (foo) {
-					console.log('');
-					console.log('called funcFoo:', foo, this);
-					console.log('');
-				};
+<script src="../dist/EventEmitter.min.js"></script>
+<script src="../dist/basket.full.custom.min.js"></script>
+<script src="../dist/import.min.js"></script>
+<script>
+	var funcFoo = function (foo) {
+		console.log('');
+		console.log('called funcFoo:', foo, this);
+		console.log('');
+	};
 
-				var funcBar = function (bar) {
-					console.log('');
-					console.log('called funcBar:', bar, this);
-					console.log('');
-				};
+	var funcBar = function (bar) {
+		console.log('');
+		console.log('called funcBar:', bar, this);
+		console.log('');
+	};
 
-				var funcBaz = function (baz) {
-					console.log('');
-					console.log('called funcBaz:', baz, this);
-					console.log('');
-				};
+	var funcBaz = function (baz) {
+		console.log('');
+		console.log('called funcBaz:', baz, this);
+		console.log('');
+	};
 
-				var funcToll = function (toll) {
-					console.log('');
-					console.log('called funcToll:', toll, this);
-					console.log('');
-				};
+	var funcToll = function (toll) {
+		console.log('');
+		console.log('called funcToll:', toll, this);
+		console.log('');
+	};
 
-				var loading = $.import([
-					{
-						condition: $('body'),
-						fetch: [
-							'https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.11.2/URI.min.js',
-							'https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.2.1/jasmine.min.js'
-						],
-						callback: [
-							{ method: funcFoo, param: 'foo' },
-							{ method: funcBar, param: { text: 'bar' } },
-							{ method: funcBaz }
-						],
-						unique: new Date().getTime()
-					},
-					{
-						condition: $('#foo'),
-						fetch: [
-							'https://www.high5.com/typo3conf/ext/bra_projectfiles/Resources/Public/js/libs/vendor/slick/slick.min.js'
-						],
-						callback: [
-							{ method: funcToll, param: 'toll' }
-						],
-						unique: new Date().getTime()
-					},
-					{
-						condition: $('p'),
-						fetch: [
-							'http://yandex.st/highlightjs/7.3/styles/googlecode.min.css',
-							'http://yandex.st/highlightjs/7.3/highlight.min.js'
-						],
-						callback: [],
-						unique: new Date().getTime() //new Date().getTime()
-					},
-					{
-						condition: true,
-						event: [
-							{ name: 'angular-loaded', data: ['classname'] },
-							{ name: 'angular-loaded-too', data: [['holy', 's***']] }
-						],
-						fetch: [
-							'http://yandex.st/highlightjs/7.3/styles/googlecode.min.css'
-						],
-						callback: [],
-						unique: new Date().getTime()
-					}
-				], true);
+	var loading = window.import([
+		{
+			condition: 'body',
+			fetch: [
+				'https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.11.2/URI.min.js',
+				'https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.2.1/jasmine.min.js'
+			],
+			callback: [
+				{ method: funcFoo, param: 'foo' },
+				{ method: funcBar, param: { text: 'bar' } },
+				{ method: funcBaz }
+			],
+			unique: new Date().getTime()
+		},
+		{
+			condition: '#foo',
+			fetch: [],
+			callback: [
+				{ method: funcToll, param: 'toll' }
+			],
+			unique: new Date().getTime()
+		},
+		{
+			condition: '#foo-bar',
+			fetch: [],
+			callback: [
+				{ method: funcToll, param: 'toll' }
+			],
+			unique: new Date().getTime()
+		},
+		{
+			condition: 'p',
+			fetch: [
+				'http://yandex.st/highlightjs/7.3/styles/googlecode.min.css',
+				'http://yandex.st/highlightjs/7.3/highlight.min.js'
+			],
+			callback: [],
+			unique: new Date().getTime() //new Date().getTime()
+		},
+		{
+			condition: true,
+			event: [
+				{ name: 'angular-loaded', data: ['classname'] },
+				{ name: 'angular-loaded-too', data: [['holy', 's***']] }
+			],
+			fetch: [
+				'http://yandex.st/highlightjs/7.3/styles/googlecode.min.css'
+			],
+			callback: [],
+			unique: new Date().getTime()
+		}
+	], true);
 
-				loading.then(function() {
-					console.log('promises are so great');
-				});
-
-				$(document).on('angular-loaded', function (e, className) {
-					console.log(className);
-				});
-
-				$(document).on('angular-loaded-too', function (e, param) {
-					console.log(param.join(' '));
-				});
-
-				$(document).on('import-foo-bar-loaded', function () {
-					console.log('event: foobar has been loaded');
-				});
-
-				var statusText = function () {
-					$('h2').text($('body').attr('data-loaded') + ' of ' + $('body').attr('data-loading') + ' modules loaded');
-				};
-
-				statusText();
-
-				$(document).on('on-module-loaded on-loading-done', statusText);
-			});
-		</script>
+	loading.then(function() {
+		console.log('promises are so great');
+	});
+</script>
 </body>
 </html>

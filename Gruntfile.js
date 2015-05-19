@@ -10,8 +10,8 @@ module.exports = function(grunt) {
 				dest: 'dist/basket.full.custom.min.js'
 			},
             import: {
-                src: ['dev/jquery.import.js'],
-                dest: 'dist/jquery.import.min.js'
+                src: ['dev/import.js'],
+                dest: 'dist/import.min.js'
             }
 		},
         minified : {
