@@ -14,7 +14,6 @@ Think of it as the spine of your web application. Please read on to get an idea 
 ## TBD
 
 - remove jqQery dependency -> DONE
-- add facade to add event listeners after each module has been loaded
 - code review -> DONE
 - tests
 - performance optimizations
@@ -55,7 +54,7 @@ $(function() {
 			],
 			event: [
 				{ name: 'my-custom-event', data: ['someStringParam', 'anotherStringParam'] },
-				{ name: 'another-custom-event', data: [[31415, { hello: 'world' }]] }
+				{ name: 'another-custom-event', data: { hello: 'world' } }
 			],
 			unique: new Date().getTime()
 		}
@@ -96,7 +95,7 @@ The main part of the whole thing is the sorting of the modules.
 |-----------|-----------------|-----------------------------------------------------------------------------------------------------------|
 | condition | {*}             | The main entry point for import.js. If this condition is true, the dependencies will be loaded.           |
 | fetch     | {Array}         | An array of file references to be loaded. Allowed are CSS and JS files.                                   |
-| event     | {Array}         | A list of custom events and related parameters to be fired, when the module dependencies have been loaded |
+| event     | {Array}         | A list of custom events and related parameters to be fired, when the module dependencies have been loaded. NOTE: If you're using jQuery for eventlisteners you'll find the event data within the originalEvent object |
 | callback  | {Array}         | A list of callbacks to be called, when the module has been loaded                                         |
 | unique    | {Number/String} | If this value changes the modules' dependecies will be refetched from the server                                                                                               |
 
