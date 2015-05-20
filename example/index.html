@@ -95,7 +95,7 @@
 
 	<div id="foo" style="margin-top: 1000px">foo</div>
 </div>
-<script src="../dist/EventEmitter.min.js"></script>
+<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="../dist/basket.full.custom.min.js"></script>
 <script src="../dist/import.min.js"></script>
 <script>
@@ -165,8 +165,9 @@
 		{
 			condition: true,
 			event: [
-				{ name: 'angular-loaded', data: ['classname'] },
-				{ name: 'angular-loaded-too', data: [['holy', 's***']] }
+				{ name: 'angular-loaded', data: 'classname' },
+				{ name: 'angular-loaded-too', data: { message: ['holy', 's***'] } },
+				{ name: 'angular-loaded-too2', data: ['holy', 's***'] }
 			],
 			fetch: [
 				'http://yandex.st/highlightjs/7.3/styles/googlecode.min.css'
@@ -175,6 +176,22 @@
 			unique: new Date().getTime()
 		}
 	], true);
+
+	$(document).on('angular-loaded', function (e) {
+		console.log('custom event', e.originalEvent);
+	});
+
+	document.addEventListener('angular-loaded', function (event) {
+		console.log(event);
+	});
+
+	document.addEventListener('angular-loaded-too', function (event) {
+		console.log(event);
+	});
+
+	document.addEventListener('angular-loaded-too2', function (event) {
+		console.log(event);
+	});
 
 	loading.then(function() {
 		console.log('promises are so great');

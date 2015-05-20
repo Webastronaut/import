@@ -21,12 +21,11 @@
 			defer: RSVP.defer(),
 			loadNow: [],
 			loadLater: [],
-			viewport: window.innerHeight,
-			eventEmitter: new EventEmitter()
+			viewport: window.innerHeight
 		};
 
 		_.finishModuleLoading = function (mod) {
-			var eventData,
+			var event,
 				_this;
 
 			if (!mod.isBool) {
@@ -50,10 +49,16 @@
 			// fire custom event(s) when module is available
 			if (mod.event && mod.event.length) {
 				for (var j = 0, lenEvt = mod.event.length; j < lenEvt; j += 1) {
-					// get data for event handler if data assigned
-					eventData = mod.event[j].data.slice() || [];
+					event = new CustomEvent(
+						mod.event[j].name,
+						{
+							detail: mod.event[j].data,
+							bubbles: true,
+							cancelable: true
+						}
+					);
 
-					_.eventEmitter.emitEvent(mod.event[j].name, eventData);
+					document.dispatchEvent(event);
 				}
 			}
 
@@ -74,13 +79,23 @@
 		_.getDependencies = function (module) {
 			var mod = module,
 				basketOptions = {},
+				event,
 				promise;
 
 			// all modules loaded?
 			if (mod.fetch.length === 0) {
 				_.finishModuleLoading(mod);
 
-				_.eventEmitter.emitEvent('on-module-loaded');
+				event = new CustomEvent(
+					'on-module-loaded',
+					{
+						bubbles: true,
+						cancelable: true
+					}
+				);
+
+				document.dispatchEvent(event);
+
 				_.loaded += 1;
 				_.loading -= 1;
 
@@ -112,12 +127,16 @@
 				_.getDependencies(mod);
 			}, function () {
 				// uh oh, an error occured while loading (silence is golden)
-				_.eventEmitter.emitEvent('on-loading-error', [
+				event = new CustomEvent(
+					'on-loading-error',
 					{
-						module: mod,
-						status: 'Failed to load module'
+						detail: mod,
+						bubbles: true,
+						cancelable: true
 					}
-				]);
+				);
+
+				document.dispatchEvent(event);
 			});
 		};
 
@@ -207,6 +226,8 @@
 		 * todo refactor
 		 */
 		_.setStatus = function (status) {
+			var event;
+
 			status = _.getPercent(status);
 
 			// set initial and all following loading states
@@ -221,13 +242,21 @@
 					_.body[0].className = _.body[0].className.replace('on-loading ', '');
 					_.body[0].className = _.body[0].className.replace('on-loading-100', 'on-loading-done');
 
-					_.eventEmitter.emitEvent('on-loading-done');
-
-					_.defer.resolve();
-
 					setTimeout(function () {
 						_.body[0].className = _.body[0].className.replace('on-loading-done', '');
 						_.body[0].className += (_.body[0].className ? ' ' : '') + 'on-loading-complete';
+
+						event = new CustomEvent(
+							'on-loading-done',
+							{
+								bubbles: true,
+								cancelable: true
+							}
+						);
+
+						document.dispatchEvent(event);
+
+						_.defer.resolve();
 					}, 100);
 				}
 			}, 50);
