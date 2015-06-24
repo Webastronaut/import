@@ -14,6 +14,10 @@
 		defaultExpiration = 5000,
 		inBasket = [];
 
+	if(!window.loadedDependencies) {
+		window.loadedDependencies = {};
+	}
+
 	var addLocalStorage = function (key, storeObj) {
 		try {
 			localStorage.setItem(storagePrefix + key, JSON.stringify(storeObj));
@@ -161,20 +165,31 @@
 	};
 
 	var injectCode = function (obj, type) {
-		var code = document.createElement(type);
+		var code;
 
-		if (type === 'style') {
-			code.setAttribute('type', 'text/css');
-			code.textContent += obj.data;
+		console.log('loaded', window.loadedDependencies);
+		console.log('trying to inject', window.loadedDependencies[obj.key]);
+
+		if(!window.loadedDependencies[obj.key]) {
+			code = document.createElement(type);
+
+			if (type === 'style') {
+				code.setAttribute('type', 'text/css');
+				code.textContent += obj.data;
+			} else {
+				// Have to use .text, since we support IE8,
+				// which won't allow appending to a script
+				code.text = obj.data;
+			}
+
+			code.defer = true;
+
+			head.appendChild(code);
+			console.log('injected code of', obj.key);
+			window.loadedDependencies[obj.key] = true;
 		} else {
-			// Have to use .text, since we support IE8,
-			// which won't allow appending to a script
-			code.text = obj.data;
+			console.log('already injected code of', obj.key);
 		}
-
-		code.defer = true;
-
-		head.appendChild(code);
 	};
 
 	var handlers = {
@@ -233,7 +248,6 @@
 					inBasket.push(arguments[a].url);
 				}
 			}
-
 			var promise = fetch.apply(null, arguments).then(performActions);
 
 			promise.thenRequire = thenRequire;

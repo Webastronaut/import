@@ -115,9 +115,9 @@
 				promise = basket.require(basketOptions);
 
 				// store the loaded dependency reference for possible lookups
-				if (window.loadedDependencies.indexOf(mod.fetch[0]) > -1) {
+				/*if (window.loadedDependencies.indexOf(mod.fetch[0]) > -1) {
 					window.loadedDependencies.push(mod.fetch[0]);
-				}
+				}*/
 			}
 
 			// Load the next dependency
@@ -306,10 +306,10 @@
 		 *
 		 */
 		_.init = function () {
-			if (!window.loadedDependencies) {
+			//if (!window.loadedDependencies) {
 				// storage for loaded dependencies
-				window.loadedDependencies = [];
-			}
+			//	window.loadedDependencies = [];
+			//}
 
 			if (timeout) {
 				basket.timeout = timeout;
