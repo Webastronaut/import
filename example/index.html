@@ -99,6 +99,7 @@
 <script src="../dist/basket.full.custom.min.js"></script>
 <script src="../dist/import.min.js"></script>
 <script>
+	var test;
 	var funcFoo = function (foo) {
 		console.log('');
 		console.log('called funcFoo:', foo, this);
@@ -172,7 +173,9 @@
 			fetch: [
 				'http://yandex.st/highlightjs/7.3/styles/googlecode.min.css'
 			],
-			callback: [],
+			callback: [
+				{ method: test }
+			],
 			unique: new Date().getTime()
 		}
 	], true);

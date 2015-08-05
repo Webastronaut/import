@@ -113,11 +113,6 @@
 				}
 
 				promise = basket.require(basketOptions);
-
-				// store the loaded dependency reference for possible lookups
-				/*if (window.loadedDependencies.indexOf(mod.fetch[0]) > -1) {
-					window.loadedDependencies.push(mod.fetch[0]);
-				}*/
 			}
 
 			// Load the next dependency
@@ -159,10 +154,12 @@
 					}
 
 					if (module.exists) {
-						if (!module.isBool) {
-							module.order = Math.floor(module.condition[0].offsetTop);
-						} else {
-							module.order = _.viewport;
+						if(module.order === undefined) {
+							if (!module.isBool) {
+								module.order = Math.floor(module.condition[0].offsetTop);
+							} else {
+								module.order = _.viewport;
+							}
 						}
 
 						_.loadNow.push(module);
@@ -306,11 +303,6 @@
 		 *
 		 */
 		_.init = function () {
-			//if (!window.loadedDependencies) {
-				// storage for loaded dependencies
-			//	window.loadedDependencies = [];
-			//}
-
 			if (timeout) {
 				basket.timeout = timeout;
 			}

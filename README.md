@@ -93,11 +93,14 @@ The main part of the whole thing is the sorting of the modules.
 
 | Name      | Type            | Description                                                                                               |
 |-----------|-----------------|-----------------------------------------------------------------------------------------------------------|
-| condition | {*}             | The main entry point for import.js. If this condition is true, the dependencies will be loaded.           |
-| fetch     | {Array}         | An array of file references to be loaded. Allowed are CSS and JS files.                                   |
+| condition* | {*}             | The main entry point for import.js. If this condition is true, the dependencies will be loaded.           |
+| fetch*     | {Array}         | An array of file references to be loaded. Allowed are CSS and JS files.                                   |
 | event     | {Array}         | A list of custom events and related parameters to be fired, when the module dependencies have been loaded. NOTE: If you're using jQuery for eventlisteners you'll find the event data within the originalEvent object |
 | callback  | {Array}         | A list of callbacks to be called, when the module has been loaded                                         |
-| unique    | {Number/String} | If this value changes the modules' dependecies will be refetched from the server                                                                                               |
+| unique    | {Number/String} | If this value changes the modules' dependecies will be refetched from the server
+| order		| {Number}		  | Order in which the module will be loaded                                                                                            |
+
+\* mandatory
 
 ### Thrown events
 
