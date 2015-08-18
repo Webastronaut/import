@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>loadmodule</title>
+	<title>Import.js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="cleartype" content="on">
@@ -25,6 +25,25 @@
 			transition: opacity .2s;
 			overflow:hidden;
 		}
+		
+		body {
+			margin: 0;
+			padding: 0;
+		}
+		
+		body:before {
+			content: 'Lade Modul: "' attr(data-module) '"; Modul ' attr(data-loaded) ' von ' attr(data-loading) ' (' attr(data-status) '%)';
+		}
+		
+		body.on-loaded-atf {
+			display: block;
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			border:solid 10px green;
+		}
 
 		span {
 			display:block;
@@ -34,7 +53,17 @@
 			position: absolute;
 			top: 0;
 			left: 0;
-			/*transition: width .2s;*/
+			transition: width .2s;
+		}
+		
+		.mod-content .on-loading:before {
+			content: 'Lädt ...';
+			color: black;
+			font-size: 18px;
+		}
+		
+		.on-loading-error {
+			border: solid 10px red;
 		}
 
 		.on-loading-10 span {
@@ -91,9 +120,12 @@
 	<h2></h2>
 	<p><span></span></p>
 
-	<p><span></span></p>
-
-	<div id="foo" style="margin-top: 1000px">foo</div>
+	<div id="foo" style="min-height:25vh; background-color: green;"></div>
+	<div id="baz" style="min-height:25vh; background-color: orange;"></div>
+	<div id="foobar" style="min-height:50vh; background-color: navy;"></div>
+	<div id="foobarbaz" style="min-height:50vh; background-color: green;"></div>
+	<div id="bazinga" style="min-height:50vh; background-color: orange;"></div>
+</div>
 </div>
 <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="../dist/basket.full.custom.min.js"></script>
@@ -101,32 +133,34 @@
 <script>
 	var test;
 	var funcFoo = function (foo) {
-		console.log('');
-		console.log('called funcFoo:', foo, this);
-		console.log('');
+		//console.log('');
+		//console.log('called funcFoo:', foo, this);
+		//console.log('');
 	};
 
 	var funcBar = function (bar) {
-		console.log('');
-		console.log('called funcBar:', bar, this);
-		console.log('');
+		//console.log('');
+		//console.log('called funcBar:', bar, this);
+		//console.log('');
 	};
 
 	var funcBaz = function (baz) {
-		console.log('');
-		console.log('called funcBaz:', baz, this);
-		console.log('');
+		//console.log('');
+		//console.log('called funcBaz:', baz, this);
+		//console.log('');
 	};
 
 	var funcToll = function (toll) {
-		console.log('');
-		console.log('called funcToll:', toll, this);
-		console.log('');
+		//console.log('');
+		//console.log('called funcToll:', toll, this);
+		//console.log('');
 	};
 
+	basket.timeout = 60000;
 	var loading = window.import([
 		{
 			condition: 'body',
+			name: 'test-modules',
 			fetch: [
 				'https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.11.2/URI.min.js',
 				'https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.2.1/jasmine.min.js'
@@ -140,6 +174,7 @@
 		},
 		{
 			condition: '#foo',
+			name: 'module without deps',
 			fetch: [],
 			callback: [
 				{ method: funcToll, param: 'toll' }
@@ -147,7 +182,8 @@
 			unique: new Date().getTime()
 		},
 		{
-			condition: '#foo-bar',
+			condition: '#bar',
+			name: 'another mod without deps',
 			fetch: [],
 			callback: [
 				{ method: funcToll, param: 'toll' }
@@ -156,6 +192,7 @@
 		},
 		{
 			condition: 'p',
+			name: 'syntax highlighting',
 			fetch: [
 				'http://yandex.st/highlightjs/7.3/styles/googlecode.min.css',
 				'http://yandex.st/highlightjs/7.3/highlight.min.js'
@@ -164,7 +201,57 @@
 			unique: new Date().getTime() //new Date().getTime()
 		},
 		{
-			condition: true,
+			condition: '#baz',
+			name: 'just a test',
+			event: [
+				{ name: 'angular-loaded', data: 'classname' },
+				{ name: 'angular-loaded-too', data: { message: ['holy', 's***'] } },
+				{ name: 'angular-loaded-too2', data: ['holy', 's***'] }
+			],
+			fetch: [
+				
+				// AHAAHHAHAHAH an error
+				'http://yandex.st/highlightjs/7.3/stylsdfes/googlecode.min.cssdfsds'
+			],
+			callback: [
+				{ method: test }
+			],
+			unique: new Date().getTime()
+		},
+		{
+			condition: '#foobar',
+			name: 'OH OH',
+			event: [
+				{ name: 'angular-loaded', data: 'classname' },
+				{ name: 'angular-loaded-too', data: { message: ['holy', 's***'] } },
+				{ name: 'angular-loaded-too2', data: ['holy', 's***'] }
+			],
+			fetch: [
+				'http://yandex.st/highlightjs/7.3/styles/googlecode.min.css'
+			],
+			callback: [
+				{ method: test }
+			],
+			unique: new Date().getTime()
+		},
+		{
+			condition: '#foobarbaz',
+			event: [
+				{ name: 'angular-loaded', data: 'classname' },
+				{ name: 'angular-loaded-too', data: { message: ['holy', 's***'] } },
+				{ name: 'angular-loaded-too2', data: ['holy', 's***'] }
+			],
+			fetch: [
+				'http://yandex.st/highlightjs/7.3/styles/googlecode.min.css'
+			],
+			callback: [
+				{ method: test }
+			],
+			unique: new Date().getTime()
+		},
+		{
+			condition: '#bazinga',
+			name: 'AHHHHH',
 			event: [
 				{ name: 'angular-loaded', data: 'classname' },
 				{ name: 'angular-loaded-too', data: { message: ['holy', 's***'] } },
@@ -181,19 +268,19 @@
 	], true);
 
 	$(document).on('angular-loaded', function (e) {
-		console.log('custom event', e.originalEvent);
+		//console.log('custom event', e.originalEvent);
 	});
 
 	document.addEventListener('angular-loaded', function (event) {
-		console.log(event);
+		//console.log(event);
 	});
 
 	document.addEventListener('angular-loaded-too', function (event) {
-		console.log(event);
+		//console.log(event);
 	});
 
 	document.addEventListener('angular-loaded-too2', function (event) {
-		console.log(event);
+		//console.log(event);
 	});
 
 	loading.then(function() {

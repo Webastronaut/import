@@ -23,8 +23,44 @@
 			loadLater: [],
 			viewport: window.innerHeight
 		};
+		
+		_.fireCallbacks = function(callbacks, _this) {
+			for (var i = 0, len = callbacks.length; i < len; i += 1) {
+				if (callbacks[i].method) {
+					// do we have params for the method call?
+					if (callbacks[i].param) {
+						callbacks[i].method.call(_this, callbacks[i].param);
+					} else {
+						callbacks[i].method.call(_this);
+					}
+				}
+			}
+		};
+		
+		_.fireEvents = function(events) {
+			for (var j = 0, lenEvt = events.length; j < lenEvt; j += 1) {
+				event = new CustomEvent(
+					events[j].name,
+					{
+						detail: events[j].data,
+						bubbles: true,
+						cancelable: true
+					}
+				);
 
-		_.finishModuleLoading = function (mod) {
+				document.dispatchEvent(event);
+			}	
+		};
+		
+		_.changeLoadingClass = function(_this, errorOccurred) {
+			for (var k = 0, lenElmt = _this.length; k < lenElmt; k += 1) {
+				if (_this[k].tagName !== 'BODY') {
+					_this[k].className = _this[k].className.replace('on-loading', errorOccurred ? 'on-loading-error' : '');
+				}
+			}	
+		};
+
+		_.finishModuleLoading = function (mod, errorOccurred) {
 			var event,
 				_this;
 
@@ -33,42 +69,50 @@
 			}
 
 			// fire the callback(s) and assign this to it
-			if (mod.callback) {
-				for (var i = 0, len = mod.callback.length; i < len; i += 1) {
-					if (mod.callback[i].method) {
-						// do we have params for the method call?
-						if (mod.callback[i].param) {
-							mod.callback[i].method.call(_this, mod.callback[i].param);
-						} else {
-							mod.callback[i].method.call(_this);
-						}
-					}
-				}
+			if (mod.callback && !errorOccurred) {
+				_.fireCallbacks(mod.callback, _this);
 			}
 
 			// fire custom event(s) when module is available
-			if (mod.event && mod.event.length) {
-				for (var j = 0, lenEvt = mod.event.length; j < lenEvt; j += 1) {
-					event = new CustomEvent(
-						mod.event[j].name,
-						{
-							detail: mod.event[j].data,
-							bubbles: true,
-							cancelable: true
-						}
-					);
-
-					document.dispatchEvent(event);
-				}
+			if (mod.event && mod.event.length && !errorOccurred) {
+				_.fireEvents(mod.event);
 			}
 
 			if (!mod.isBool) {
-				for (var k = 0, lenElmt = _this.length; k < lenElmt; k += 1) {
-					if (_this[k].tagName !== 'BODY') {
-						_this[k].className = _this[k].className.replace('on-loading', '');
-					}
+				_.changeLoadingClass(_this, errorOccurred);
+			}
+		};
+		
+		_.moduleLoadingDone = function(eventName, status, errorOccurred) {
+			event = new CustomEvent(
+				eventName,
+				{
+					bubbles: true,
+					cancelable: true
+				}
+			);
+
+			document.dispatchEvent(event);
+
+			_.loaded += 1;
+			_.loading -= 1;
+			
+			modules.shift();
+			
+			if(modules[0] !== undefined) {
+				setTimeout(function() {
+					_.getDependencies(modules);
+				}, 1000);
+				
+				if (setStatus) {
+					_.setStatus(null, status, errorOccurred);
 				}
 			}
+			//_.body[0].dataset.module = '';
+			
+			/*if (setStatus) {
+				_.setStatus(null, status, errorOccurred);
+			}	*/
 		};
 
 		/** Recursively loads all dependencies and fires the callback
@@ -76,33 +120,21 @@
 		 *
 		 * @param {Object} module
 		 */
-		_.getDependencies = function (module) {
-			var mod = module,
+		_.getDependencies = function (modules) {
+			var mod = modules[0],
 				basketOptions = {},
 				event,
 				promise;
+				
+			// todo shouldnt be located here
+			_.body[0].dataset.module = mod.name ? mod.name : 'anonymous module';
 
 			// all modules loaded?
 			if (mod.fetch.length === 0) {
 				_.finishModuleLoading(mod);
 
-				event = new CustomEvent(
-					'on-module-loaded',
-					{
-						bubbles: true,
-						cancelable: true
-					}
-				);
-
-				document.dispatchEvent(event);
-
-				_.loaded += 1;
-				_.loading -= 1;
-
-				if (setStatus) {
-					_.setStatus();
-				}
-
+				_.moduleLoadingDone('on-module-loaded', mod.order);
+				
 				return;
 			} else {
 				// for the party people load it from the localstorage
@@ -119,19 +151,12 @@
 			promise.then(function () {
 				mod.fetch.shift();
 
-				_.getDependencies(mod);
+				_.getDependencies(modules);
 			}, function () {
 				// uh oh, an error occured while loading (silence is golden)
-				event = new CustomEvent(
-					'on-loading-error',
-					{
-						detail: mod,
-						bubbles: true,
-						cancelable: true
-					}
-				);
-
-				document.dispatchEvent(event);
+				// todo proceed, don't just quit here
+				_.finishModuleLoading(mod, true);
+				_.moduleLoadingDone('on-loading-error', mod.order, true);
 			});
 		};
 
@@ -222,7 +247,7 @@
 		/** Sets the loading status by adding classes and attributes to the body element
 		 * todo refactor
 		 */
-		_.setStatus = function (status) {
+		_.setStatus = function (status, order, errorOccurred) {
 			var event;
 
 			status = _.getPercent(status);
@@ -232,6 +257,12 @@
 			_.body[0].dataset.loading = _.lengthLoading;
 			_.body[0].dataset.loaded = _.loaded;
 			_.body[0].className = _.body[0].className.replace(/on-loading-(\d){1,3}/g, 'on-loading-' + status);
+			
+			if(order && 
+				order >= _.viewport && 
+				!/on\-loaded\-atf/ig.test(_.body[0].className)) {
+				_.body[0].className += ' on-loaded-atf'; // above the fold
+			}
 
 			// set final loading state and fire event when done
 			setTimeout(function () {
@@ -275,7 +306,7 @@
 		/** Initialize the module loading
 		 *
 		 */
-		_.load = function (modules) {
+		_.initLoading = function (modules) {
 			// todo check also for length of modules.fetch
 			var nothingToLoad = !modules.length;
 
@@ -293,10 +324,10 @@
 							}
 						}
 					}
-
-					_.getDependencies(modules[i]);
 				}
 			}
+			
+			_.getDependencies(modules);
 		};
 
 		/** Constructor
@@ -309,7 +340,7 @@
 
 			_.processModules()
 				.then(_.sortModules)
-				.then(_.load);
+				.then(_.initLoading);
 		};
 
 		_.init();
