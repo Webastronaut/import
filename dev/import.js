@@ -108,11 +108,6 @@
 					_.setStatus(null, status, errorOccurred);
 				}
 			}
-			//_.body[0].dataset.module = '';
-			
-			/*if (setStatus) {
-				_.setStatus(null, status, errorOccurred);
-			}	*/
 		};
 
 		/** Recursively loads all dependencies and fires the callback
